@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sign in to JobPilot — AI-powered job search assistant.">
+  <title>Sign in — JobPilot</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-body">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <main id="main" class="auth">
+    <div class="auth__container">
+
+      <!-- Left: brand + value prop -->
+      <aside class="auth__brand">
+        <a href="index.html" class="auth__logo" aria-label="JobPilot home">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="20" cy="6" r="2" fill="currentColor"/>
+          </svg>
+          <span>JobPilot</span>
+        </a>
+
+        <h1 class="auth__brand-title text-balance">
+          Welcome back to JobPilot
+        </h1>
+        <p class="auth__brand-subtitle">
+          Pick up where you left off — check your applications, review new matches, and prepare for upcoming interviews.
+        </p>
+
+        <ul class="auth__benefits">
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Your data is private and secure</span>
+          </li>
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Track every application stage</span>
+          </li>
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Pick up where you left off</span>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Right: form -->
+      <section class="auth__form-wrapper">
+        <div class="auth__card">
+          <header class="auth__header">
+            <h2 class="auth__title">Sign in</h2>
+            <p class="auth__subtitle text-muted">
+              New to JobPilot?
+              <a href="register.html">Create an account</a>
+            </p>
+          </header>
+
+          <form id="login-form" class="auth__form" novalidate>
+            <div class="form-group">
+              <label for="email" class="label label--required">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="input"
+                autocomplete="email"
+                placeholder="you@example.com"
+                required
+              >
+              <p class="form-error" data-error-for="email" hidden></p>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="label label--required">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="input"
+                autocomplete="current-password"
+                placeholder="Your password"
+                required
+              >
+              <p class="form-error" data-error-for="password" hidden></p>
+            </div>
+
+            <div class="alert alert--danger" id="form-error-banner" hidden></div>
+
+            <button type="submit" class="btn btn--primary btn--lg btn--block" id="submit-btn">
+              <span class="btn__label">Sign in</span>
+              <span class="spinner" hidden aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <p class="auth__terms text-muted">
+            Forgot your password? <a href="#">Reset it</a>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="js/api.js" type="module"></script>
+  <script src="js/auth.js" type="module"></script>
+</body>
+</html>

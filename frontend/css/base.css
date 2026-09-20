@@ -248,7 +248,11 @@ ul, ol {
 :focus:not(:focus-visible) {
   outline: none;
 }
-
+/* Respect the `hidden` attribute everywhere.
+   Overrides component display values like .alert { display: flex }. */
+[hidden] {
+  display: none !important;
+}
 .sr-only {
   position: absolute;
   width: 1px;

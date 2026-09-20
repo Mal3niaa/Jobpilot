@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your JobPilot account — AI-powered job search assistant.">
+  <title>Create account — JobPilot</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-body">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <main id="main" class="auth">
+    <div class="auth__container">
+
+      <!-- Left: brand + value prop -->
+      <aside class="auth__brand">
+        <a href="index.html" class="auth__logo" aria-label="JobPilot home">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="20" cy="6" r="2" fill="currentColor"/>
+          </svg>
+          <span>JobPilot</span>
+        </a>
+
+        <h1 class="auth__brand-title text-balance">
+          Start your job search smarter
+        </h1>
+        <p class="auth__brand-subtitle">
+          Upload your CV once, add jobs, get explainable AI analysis — and track every application in one place.
+        </p>
+
+        <ul class="auth__benefits">
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Explainable AI match score</span>
+          </li>
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Application tracker with statuses</span>
+          </li>
+          <li>
+            <span class="auth__benefit-icon" aria-hidden="true">✓</span>
+            <span>Interview prep and cover letters</span>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Right: form -->
+      <section class="auth__form-wrapper">
+        <div class="auth__card">
+          <header class="auth__header">
+            <h2 class="auth__title">Create your account</h2>
+            <p class="auth__subtitle text-muted">
+              Already have one?
+              <a href="login.html">Sign in</a>
+            </p>
+          </header>
+
+          <form id="register-form" class="auth__form" novalidate>
+            <div class="form-group">
+              <label for="fullName" class="label">Full name</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                class="input"
+                autocomplete="name"
+                placeholder="Jane Doe"
+                maxlength="255"
+              >
+              <p class="form-error" data-error-for="fullName" hidden></p>
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="label label--required">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="input"
+                autocomplete="email"
+                placeholder="you@example.com"
+                required
+              >
+              <p class="form-error" data-error-for="email" hidden></p>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="label label--required">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="input"
+                autocomplete="new-password"
+                placeholder="At least 8 characters"
+                minlength="8"
+                maxlength="128"
+                required
+              >
+              <p class="form-hint">Use at least 8 characters.</p>
+              <p class="form-error" data-error-for="password" hidden></p>
+            </div>
+
+            <div class="form-group">
+              <label for="passwordConfirm" class="label label--required">Confirm password</label>
+              <input
+                type="password"
+                id="passwordConfirm"
+                name="passwordConfirm"
+                class="input"
+                autocomplete="new-password"
+                placeholder="Repeat your password"
+                required
+              >
+              <p class="form-error" data-error-for="passwordConfirm" hidden></p>
+            </div>
+
+            <div class="alert alert--danger" id="form-error-banner" hidden></div>
+
+            <button type="submit" class="btn btn--primary btn--lg btn--block" id="submit-btn">
+              <span class="btn__label">Create account</span>
+              <span class="spinner" hidden aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <p class="auth__terms text-muted">
+            By creating an account, you agree to our
+            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="js/api.js" type="module"></script>
+  <script src="js/auth.js" type="module"></script>
+</body>
+</html>

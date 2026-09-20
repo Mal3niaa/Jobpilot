@@ -7,7 +7,7 @@
  *  - Close menu on link click, outside click, or Escape.
  *  - Smooth scroll to anchors, offset by header height.
  */
-
+import { auth } from './api.js';
 const header = document.getElementById('header');
 const menuToggle = document.getElementById('menu-toggle');
 const mobileMenu = document.getElementById('mobile-menu');
@@ -90,3 +90,30 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     history.pushState(null, '', href);
   });
 });
+
+// ─── 4. Auth-aware header ───────────────────────────────────
+// If a token exists, replace Sign in / Get started with a Sign out button.
+
+function renderAuthState() {
+  if (!auth.isAuthenticated()) return;
+
+  const actions = document.querySelector('.header__actions');
+  if (!actions) return;
+
+  // Remove Sign in / Get started links.
+  actions.querySelectorAll('a.btn').forEach((el) => el.remove());
+
+  // Insert Sign out button.
+  const signOutBtn = document.createElement('button');
+  signOutBtn.type = 'button';
+  signOutBtn.className = 'btn btn--secondary';
+  signOutBtn.textContent = 'Sign out';
+  signOutBtn.addEventListener('click', () => {
+    auth.clearToken();
+    window.location.reload();
+  });
+
+  actions.appendChild(signOutBtn);
+}
+
+renderAuthState();

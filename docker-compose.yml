@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jobpilot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jobpilot
+      POSTGRES_PASSWORD: jobpilot
+      POSTGRES_DB: jobpilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - jobpilot_pg_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobpilot -d jobpilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  jobpilot_pg_data:

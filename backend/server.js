@@ -5,6 +5,7 @@ import { env, validateEnv, isOriginAllowed } from './config/env.js';
 import routes from './routes/index.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { ApiError } from './utils/ApiError.js';
+import { testConnection } from './db/pool.js';
 validateEnv();
 
 const app = express();
@@ -29,13 +30,33 @@ app.use('/api', routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// ─── Start ────────────────────────────────────────────────────
-const server = app.listen(env.PORT, () => {
-  console.log(`🚀 JobPilot backend running on http://localhost:${env.PORT}`);
-  console.log(`   Environment: ${env.NODE_ENV}`);
-  console.log(`   Health check: http://localhost:${env.PORT}/api/health`);
-});
+// Verify DB connectivity before accepting traffic.
+testConnection()
+  .then((now) => {
+    console.log(`✅ Database connected (server time: ${now.toISOString()})`);
 
+    const server = app.listen(env.PORT, () => {
+      console.log(`🚀 JobPilot backend running on http://localhost:${env.PORT}`);
+      console.log(`   Environment: ${env.NODE_ENV}`);
+      console.log(`   Health check: http://localhost:${env.PORT}/api/health`);
+    });
+
+    // Graceful shutdown — close HTTP server on SIGINT/SIGTERM.
+    function shutdown(signal) {
+      console.log(`\n${signal} received. Shutting down gracefully...`);
+      server.close(() => {
+        console.log('HTTP server closed.');
+        process.exit(0);
+      });
+    }
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+  })
+  .catch((err) => {
+    console.error('❌ Failed to connect to database:', err.message);
+    console.error('   Is Postgres running? Try: docker compose up -d');
+    process.exit(1);
+  });
 // ─── Graceful shutdown ────────────────────────────────────────
 function shutdown(signal) {
   console.log(`\n${signal} received. Shutting down gracefully...`);

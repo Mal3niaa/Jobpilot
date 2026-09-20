@@ -37,7 +37,10 @@ function asInt(name, fallback) {
 export const env = {
   NODE_ENV: optional('NODE_ENV', 'development'),
   PORT: asInt('PORT', 3000),
-  CORS_ORIGIN: optional('CORS_ORIGIN', 'http://localhost:5500'),
+  CORS_ORIGIN: (process.env.CORS_ORIGIN || 'http://localhost:5500')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean),
 
   DATABASE_URL: optional('DATABASE_URL', ''),
 
@@ -63,4 +66,12 @@ export function validateEnv() {
       throw new Error('JWT_SECRET must be changed in production');
     }
   }
+}
+
+export function isOriginAllowed(origin) {
+  if (!origin) return true; // curl, Postman, etc.
+  const list = Array.isArray(env.CORS_ORIGIN)
+    ? env.CORS_ORIGIN
+    : [env.CORS_ORIGIN];
+  return list.includes(origin);
 }

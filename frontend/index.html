@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="JobPilot — AI-powered job search assistant. Analyze opportunities, track applications, and prepare for interviews — all in one place.">
+  <title>JobPilot — AI-powered job search assistant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ====================================================================
+       Header
+       ==================================================================== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="/" class="header__logo" aria-label="JobPilot home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="20" cy="6" r="2" fill="currentColor"/>
+        </svg>
+        <span>JobPilot</span>
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#ai-analysis">AI Analysis</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="header__actions">
+        <button
+          type="button"
+          class="btn btn--ghost btn--icon theme-toggle"
+          id="theme-toggle"
+          aria-label="Toggle dark mode"
+        >
+          <svg class="theme-toggle__icon theme-toggle__icon--sun" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg class="theme-toggle__icon theme-toggle__icon--moon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <a href="login.html" class="btn btn--ghost">Sign in</a>
+        <a href="register.html" class="btn btn--primary">Get started</a>
+
+        <button
+          type="button"
+          class="header__menu-toggle btn btn--ghost btn--icon"
+          id="menu-toggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobile-menu" hidden>
+      <nav class="mobile-menu__nav" aria-label="Mobile navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#ai-analysis">AI Analysis</a>
+        <a href="#faq">FAQ</a>
+        <hr class="divider">
+        <a href="login.html">Sign in</a>
+        <a href="register.html" class="btn btn--primary btn--block">Get started</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ==================================================================
+         Hero
+         ================================================================== -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <span class="badge badge--accent">AI-powered job search</span>
+          <h1 class="hero__title text-balance">
+            Your AI-powered job search assistant
+          </h1>
+          <p class="hero__subtitle">
+            Analyze opportunities, track applications and prepare for interviews — all in one place.
+          </p>
+          <div class="hero__actions">
+            <a href="register.html" class="btn btn--primary btn--lg">Get started free</a>
+            <a href="#how-it-works" class="btn btn--secondary btn--lg">See how it works</a>
+          </div>
+          <p class="hero__note text-muted">
+            No credit card required · Free to try
+          </p>
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          <div class="mock-window">
+            <div class="mock-window__bar">
+              <span class="mock-window__dot"></span>
+              <span class="mock-window__dot"></span>
+              <span class="mock-window__dot"></span>
+            </div>
+            <div class="mock-window__body">
+              <div class="mock-score">
+                <span class="mock-score__value">87%</span>
+                <span class="mock-score__label">Match</span>
+              </div>
+              <div class="mock-lines">
+                <span class="mock-line mock-line--80"></span>
+                <span class="mock-line mock-line--60"></span>
+                <span class="mock-line mock-line--70"></span>
+              </div>
+              <div class="mock-badges">
+                <span class="badge badge--success">HTML</span>
+                <span class="badge badge--success">CSS</span>
+                <span class="badge badge--warning">REST API</span>
+                <span class="badge badge--danger">Docker</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         How it works
+         ================================================================== -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <header class="section-header">
+          <span class="badge badge--accent">How it works</span>
+          <h2 class="section-title text-balance">Three steps to a smarter job search</h2>
+          <p class="section-subtitle">
+            Stop juggling spreadsheets and browser tabs. JobPilot keeps everything in one place.
+          </p>
+        </header>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step__number">1</span>
+            <h3 class="step__title">Upload your CV</h3>
+            <p class="step__text">
+              Drop your PDF once. JobPilot extracts your skills, experience, and languages into a structured profile.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step__number">2</span>
+            <h3 class="step__title">Add job postings</h3>
+            <p class="step__text">
+              Save interesting roles from any site. Keep company, salary, location, and requirements in one place.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step__number">3</span>
+            <h3 class="step__title">Get AI analysis</h3>
+            <p class="step__text">
+              See strong matches, missing skills, and tailored recommendations. You decide — we explain.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         Features
+         ================================================================== -->
+    <section class="section section--alt" id="features">
+      <div class="container">
+        <header class="section-header">
+          <span class="badge badge--accent">Features</span>
+          <h2 class="section-title text-balance">Everything you need for the hunt</h2>
+          <p class="section-subtitle">
+            Built for developers who want clarity, not more noise.
+          </p>
+        </header>
+
+        <div class="features-grid">
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12l2 2 4-4M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Explainable AI match score</h3>
+            <p class="feature__text">
+              Not just a number — strong matches, partial matches, and missing skills, all visible.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Application tracker</h3>
+            <p class="feature__text">
+              Saved, applied, interview, offer, rejected — see every stage at a glance.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 20l-8-8a4 4 0 0 1 6-5l2 2 2-2a4 4 0 0 1 6 5l-8 8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Cover letters on demand</h3>
+            <p class="feature__text">
+              Generate tailored letters in English, Polish, or Ukrainian — professional or friendly tone.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Interview preparation</h3>
+            <p class="feature__text">
+              Technical, behavioral, and role-specific questions generated from the job description.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M4 19h16M7 15V9M12 15V5M17 15v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Analytics that matter</h3>
+            <p class="feature__text">
+              Response rate, interview rate, and match score trends — see what actually works.
+            </p>
+          </article>
+
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature__title">Recruiter reply assistant</h3>
+            <p class="feature__text">
+              Paste a recruiter message, get a professional reply draft in seconds.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         AI Job Analysis
+         ================================================================== -->
+    <section class="section" id="ai-analysis">
+      <div class="container">
+        <div class="split">
+          <div class="split__content">
+            <span class="badge badge--accent">AI Job Analysis</span>
+            <h2 class="section-title text-balance">AI that explains, not decides</h2>
+            <p class="section-subtitle">
+              We don't tell you "Apply" or "Don't apply". We show you the evidence — and you choose.
+            </p>
+
+            <ul class="check-list">
+              <li>
+                <span class="check-list__icon check-list__icon--success" aria-hidden="true">✓</span>
+                <div>
+                  <strong>Strong matches</strong>
+                  <p>Skills you clearly have and the job requires.</p>
+                </div>
+              </li>
+              <li>
+                <span class="check-list__icon check-list__icon--warning" aria-hidden="true">~</span>
+                <div>
+                  <strong>Partial matches</strong>
+                  <p>Skills that overlap with the requirements.</p>
+                </div>
+              </li>
+              <li>
+                <span class="check-list__icon check-list__icon--danger" aria-hidden="true">✕</span>
+                <div>
+                  <strong>Missing skills</strong>
+                  <p>What the job needs that your CV doesn't show yet.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="split__visual">
+            <div class="analysis-preview card">
+              <div class="analysis-preview__header">
+                <div>
+                  <p class="analysis-preview__company text-muted">Acme · Remote</p>
+                  <h3 class="analysis-preview__title">Junior Web Developer</h3>
+                </div>
+                <div class="match-pill">
+                  <span class="match-pill__value">82%</span>
+                  <span class="match-pill__label">Match</span>
+                </div>
+              </div>
+
+              <div class="analysis-preview__section">
+                <p class="analysis-preview__label">Strong matches</p>
+                <div class="badge-row">
+                  <span class="badge badge--success">HTML</span>
+                  <span class="badge badge--success">CSS</span>
+                  <span class="badge badge--success">JavaScript</span>
+                  <span class="badge badge--success">PHP</span>
+                  <span class="badge badge--success">MySQL</span>
+                </div>
+              </div>
+
+              <div class="analysis-preview__section">
+                <p class="analysis-preview__label">Partial</p>
+                <div class="badge-row">
+                  <span class="badge badge--warning">REST API</span>
+                </div>
+              </div>
+
+              <div class="analysis-preview__section">
+                <p class="analysis-preview__label">Missing</p>
+                <div class="badge-row">
+                  <span class="badge badge--danger">React</span>
+                  <span class="badge badge--danger">Docker</span>
+                </div>
+              </div>
+
+              <div class="alert alert--info">
+                Focus on REST API and Docker basics. Your PHP and MySQL experience is a strong fit.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         Application Tracking
+         ================================================================== -->
+    <section class="section section--alt" id="tracking">
+      <div class="container">
+        <header class="section-header">
+          <span class="badge badge--accent">Application tracking</span>
+          <h2 class="section-title text-balance">Every application, one board</h2>
+          <p class="section-subtitle">
+            From saved to offer — track each step without spreadsheets.
+          </p>
+        </header>
+
+        <div class="kanban-preview">
+          <div class="kanban-column">
+            <div class="kanban-column__header">
+              <span class="kanban-column__title">Saved</span>
+              <span class="kanban-column__count">2</span>
+            </div>
+            <div class="kanban-card">
+              <p class="kanban-card__title">PHP Developer</p>
+              <p class="kanban-card__company text-muted">Beta Ltd</p>
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-column__header">
+              <span class="kanban-column__title">Applied</span>
+              <span class="kanban-column__count">3</span>
+            </div>
+            <div class="kanban-card">
+              <p class="kanban-card__title">Frontend Developer</p>
+              <p class="kanban-card__company text-muted">Gamma</p>
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-column__header">
+              <span class="kanban-column__title">Interview</span>
+              <span class="kanban-column__count">2</span>
+            </div>
+            <div class="kanban-card kanban-card--highlight">
+              <p class="kanban-card__title">Junior Web Developer</p>
+              <p class="kanban-card__company text-muted">Acme</p>
+              <span class="badge badge--accent">87%</span>
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-column__header">
+              <span class="kanban-column__title">Offer</span>
+              <span class="kanban-column__count">1</span>
+            </div>
+            <div class="kanban-card kanban-card--success">
+              <p class="kanban-card__title">Backend Developer</p>
+              <p class="kanban-card__company text-muted">Delta</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         Interview Preparation
+         ================================================================== -->
+    <section class="section" id="interview">
+      <div class="container">
+        <div class="split split--reverse">
+          <div class="split__content">
+            <span class="badge badge--accent">Interview preparation</span>
+            <h2 class="section-title text-balance">Walk in prepared, not surprised</h2>
+            <p class="section-subtitle">
+              Generate technical, behavioral, and role-specific questions from any job description.
+            </p>
+
+            <ul class="question-list">
+              <li class="question">
+                <span class="question__tag">Technical</span>
+                <p>Explain the difference between REST and GraphQL.</p>
+              </li>
+              <li class="question">
+                <span class="question__tag question__tag--behavioral">Behavioral</span>
+                <p>Tell us about a project you're proud of.</p>
+              </li>
+              <li class="question">
+                <span class="question__tag question__tag--role">Role-specific</span>
+                <p>How would you structure a small Express API?</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="split__visual">
+            <div class="card interview-preview">
+              <div class="interview-preview__header">
+                <span class="badge badge--accent">Practice mode</span>
+                <span class="text-muted">Question 1 of 10</span>
+              </div>
+              <h3 class="interview-preview__question">
+                What is the difference between `==` and `===` in JavaScript?
+              </h3>
+              <div class="textarea" role="presentation">
+                <p class="text-muted">
+                  Type your answer here to get AI feedback on your reasoning…
+                </p>
+              </div>
+              <button type="button" class="btn btn--primary btn--block" disabled>
+                Get feedback
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         Analytics
+         ================================================================== -->
+    <section class="section section--alt" id="analytics">
+      <div class="container">
+        <header class="section-header">
+          <span class="badge badge--accent">Analytics</span>
+          <h2 class="section-title text-balance">See what's working</h2>
+          <p class="section-subtitle">
+            Data about your job search — response rate, interview rate, average match.
+          </p>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat card">
+            <span class="stat__value">24</span>
+            <span class="stat__label">Applications</span>
+          </div>
+          <div class="stat card">
+            <span class="stat__value">8</span>
+            <span class="stat__label">Interviews</span>
+          </div>
+          <div class="stat card">
+            <span class="stat__value">3</span>
+            <span class="stat__label">Offers</span>
+          </div>
+          <div class="stat card">
+            <span class="stat__value">82%</span>
+            <span class="stat__label">Average match</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         FAQ
+         ================================================================== -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <header class="section-header">
+          <span class="badge badge--accent">FAQ</span>
+          <h2 class="section-title text-balance">Frequently asked questions</h2>
+        </header>
+
+        <div class="faq">
+          <details class="faq__item">
+            <summary class="faq__question">
+              Is JobPilot free to use?
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="faq__answer">
+              Yes — JobPilot is free to try. You can upload your CV, add jobs, and get AI analysis without a credit card.
+            </p>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              How does the AI match score work?
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="faq__answer">
+              We compare your structured CV (skills, experience, education, languages) against the job description. The final score is a weighted combination of five components: technical skills (40%), experience (20%), education (10%), languages (10%), and job-specific requirements (20%).
+            </p>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              Does the AI decide whether I should apply?
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="faq__answer">
+              No. JobPilot shows you evidence — strong matches, partial matches, missing skills, and recommendations. The final decision is always yours.
+            </p>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              Which file formats are supported for my CV?
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="faq__answer">
+              PDF is supported in the current version. DOCX and other formats are on the roadmap.
+            </p>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">
+              Is my data private?
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="faq__answer">
+              Yes. Your CV and jobs are visible only to you — protected by account authentication. We never share your data with third parties.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         Final CTA
+         ================================================================== -->
+    <section class="section cta-section">
+      <div class="container">
+        <div class="cta">
+          <h2 class="cta__title text-balance">Start your job search smarter</h2>
+          <p class="cta__subtitle">
+            Upload your CV, add a job, get AI analysis — in under two minutes.
+          </p>
+          <div class="cta__actions">
+            <a href="register.html" class="btn btn--primary btn--lg">Get started free</a>
+            <a href="login.html" class="btn btn--secondary btn--lg">Sign in</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       Footer
+       ==================================================================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <a href="/" class="header__logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="20" cy="6" r="2" fill="currentColor"/>
+          </svg>
+          <span>JobPilot</span>
+        </a>
+        <p class="footer__tagline text-muted">
+          AI-powered job search assistant.
+        </p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer navigation">
+        <div class="footer__column">
+          <h4 class="footer__heading">Product</h4>
+          <a href="#features">Features</a>
+          <a href="#ai-analysis">AI Analysis</a>
+          <a href="#analytics">Analytics</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="footer__column">
+          <h4 class="footer__heading">Account</h4>
+          <a href="login.html">Sign in</a>
+          <a href="register.html">Create account</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container footer__bottom">
+      <p class="text-muted">© 2026 JobPilot. All rights reserved.</p>
+      <p class="text-muted">Built with care.</p>
+    </div>
+  </footer>
+
+  <script src="js/theme.js" type="module"></script>
+  <script src="js/main.js" type="module"></script>
+</body>
+</html>

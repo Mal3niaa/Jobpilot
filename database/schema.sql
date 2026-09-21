@@ -64,3 +64,26 @@ CREATE TRIGGER trg_jobs_updated_at
   BEFORE UPDATE ON jobs
   FOR EACH ROW
   EXECUTE FUNCTION set_updated_at();
+
+
+-- ----------------------------------------------------------------------------
+-- resumes
+-- Stores uploaded CVs and their parsed structure.
+-- Only one resume can be active per user at a time.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS resumes (
+  id              SERIAL PRIMARY KEY,
+  user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+  file_path       VARCHAR(500),
+  raw_text        TEXT,
+  parsed_json     JSONB,
+
+  is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_resumes_user_id ON resumes (user_id);
+CREATE INDEX IF NOT EXISTS idx_resumes_user_active
+  ON resumes (user_id)
+  WHERE is_active = TRUE;

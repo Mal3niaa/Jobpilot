@@ -87,3 +87,31 @@ export async function analyzeJob({ resumeText, job }) {
 
   return openai.analyzeJob({ resumeText, job });
 }
+
+
+/* --------------------------------------------------------------------------
+   Cover letter
+   -------------------------------------------------------------------------- */
+
+/**
+ * Generate a cover letter for a job.
+ * Same provider selection logic as analyzeJob.
+ */
+export async function generateCoverLetter({ resumeText, job, language, tone }) {
+  if (!resumeText || resumeText.trim().length < 30) {
+    throw ApiError.badRequest(
+      'No resume text available. Upload your CV first (Resume page).'
+    );
+  }
+
+  if (env.MOCK_MODE) {
+    return mockAi.generateCoverLetter({ resumeText, job, language, tone });
+  }
+
+  if (env.N8N_ENABLED) {
+    // n8n provider not implemented for cover letters yet — fall through to direct.
+    console.warn('[ai] n8n not implemented for cover letters — using direct OpenAI');
+  }
+
+  return openai.generateCoverLetter({ resumeText, job, language, tone });
+}

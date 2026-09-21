@@ -1,14 +1,16 @@
 /**
- * job-details.js — View, update status, delete a job, run AI analysis.
+ * job-details.js — View, update status, delete a job, run AI analysis, generate cover letter.
  *
  * Reads ?id= from URL. Loads GET /api/jobs/:id and GET /api/jobs/:id/analysis.
  * Status dropdown → PUT /api/jobs/:id { status }.
  * Delete → DELETE /api/jobs/:id → redirect jobs.html.
  * Edit → redirect job-new.html?id=X.
  * Analyze → POST /api/jobs/:id/analyze → render analysis below.
+ * Cover letter → modal with language/tone → POST /api/ai/cover-letter.
  */
 
 import { api, ApiError } from '../api.js';
+import { createModal } from '../ui/modal.js';
 
 const STATUSES = [
   { value: 'saved', label: 'Saved' },
@@ -170,6 +172,10 @@ function renderDetails(container, job) {
             Analyze with AI
           </button>
 
+          <button type="button" class="btn btn--secondary btn--block" id="cover-letter-btn">
+            Generate cover letter
+          </button>
+
           <button type="button" class="btn btn--ghost btn--block" id="delete-btn">
             Delete job
           </button>
@@ -298,6 +304,7 @@ function attachActions(container, job) {
   const deleteBtn = container.querySelector('#delete-btn');
   const analyzeBtn = container.querySelector('#analyze-btn');
   const analysisSection = document.getElementById('analysis-section');
+  const coverLetterBtn = container.querySelector('#cover-letter-btn');
 
   // Status change
   if (statusSelect) {
@@ -350,15 +357,12 @@ function attachActions(container, job) {
       analyzeBtn.textContent = 'Analyzing…';
 
       renderAnalysisLoading(analysisSection);
-
-      // Scroll to analysis section
       analysisSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       try {
         const data = await api.post(`/jobs/${job.id}/analyze`);
         renderAnalysis(analysisSection, data.analysis);
 
-        // Update overview match score
         const scoreEl = document.getElementById('overview-match-score');
         if (scoreEl) scoreEl.textContent = `${data.analysis.matchScore}%`;
 
@@ -372,6 +376,120 @@ function attachActions(container, job) {
       }
     });
   }
+
+  // Cover letter
+  if (coverLetterBtn) {
+    coverLetterBtn.addEventListener('click', () => {
+      openCoverLetterModal(job);
+    });
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Cover letter modal
+   -------------------------------------------------------------------------- */
+function openCoverLetterModal(job) {
+  const bodyHtml = `
+    <div class="form-group">
+      <label for="cl-language" class="label">Language</label>
+      <select id="cl-language" class="select">
+        <option value="en">English</option>
+        <option value="pl">Polish</option>
+        <option value="uk">Ukrainian</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="cl-tone" class="label">Tone</label>
+      <select id="cl-tone" class="select">
+        <option value="professional">Professional</option>
+        <option value="friendly">Friendly</option>
+        <option value="concise">Concise</option>
+      </select>
+    </div>
+
+    <div id="cl-status" hidden style="margin-top: var(--space-4);"></div>
+
+    <div id="cl-result-wrap" hidden style="margin-top: var(--space-4);">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2);">
+        <span class="detail-item__label" style="margin: 0;">Generated letter</span>
+        <button type="button" class="btn btn--ghost btn--sm" id="cl-copy-btn">Copy</button>
+      </div>
+      <div class="cover-letter-result" id="cl-result"></div>
+    </div>
+  `;
+
+  const footerHtml = `
+    <button type="button" class="btn btn--secondary" id="cl-cancel-btn">Close</button>
+    <button type="button" class="btn btn--primary" id="cl-generate-btn">
+      <span class="btn__label">Generate</span>
+      <span class="spinner" hidden aria-hidden="true"></span>
+    </button>
+  `;
+
+  const modal = createModal({
+    title: 'Generate cover letter',
+    bodyHtml,
+    footerHtml,
+  });
+
+  modal.open();
+
+  const languageEl = modal.el.querySelector('#cl-language');
+  const toneEl = modal.el.querySelector('#cl-tone');
+  const statusEl = modal.el.querySelector('#cl-status');
+  const resultWrap = modal.el.querySelector('#cl-result-wrap');
+  const resultEl = modal.el.querySelector('#cl-result');
+  const copyBtn = modal.el.querySelector('#cl-copy-btn');
+  const generateBtn = modal.el.querySelector('#cl-generate-btn');
+  const cancelBtn = modal.el.querySelector('#cl-cancel-btn');
+
+  const setLoading = (isLoading) => {
+    generateBtn.disabled = isLoading;
+    generateBtn.classList.toggle('is-loading', isLoading);
+    const spinner = generateBtn.querySelector('.spinner');
+    const label = generateBtn.querySelector('.btn__label');
+    if (spinner) spinner.hidden = !isLoading;
+    if (label) label.style.visibility = isLoading ? 'hidden' : '';
+  };
+
+  cancelBtn.addEventListener('click', () => modal.close());
+
+  generateBtn.addEventListener('click', async () => {
+    setLoading(true);
+    statusEl.hidden = false;
+    statusEl.innerHTML = `<div class="alert alert--info"><span class="spinner" aria-hidden="true"></span> Generating cover letter…</div>`;
+    resultWrap.hidden = true;
+
+    try {
+      const data = await api.post('/ai/cover-letter', {
+        jobId: job.id,
+        language: languageEl.value,
+        tone: toneEl.value,
+      });
+
+      resultEl.textContent = data.letter;
+      resultWrap.hidden = false;
+      statusEl.hidden = true;
+    } catch (err) {
+      console.error('[job-details] cover letter failed', err);
+      statusEl.innerHTML = `<div class="alert alert--danger">${escapeHtml(err.message || 'Generation failed.')}</div>`;
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(resultEl.textContent);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+    } catch (err) {
+      console.error('[job-details] copy failed', err);
+      copyBtn.textContent = 'Copy failed';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+    }
+  });
 }
 
 /* --------------------------------------------------------------------------
@@ -409,7 +527,6 @@ async function init() {
         if (analyzeBtn) analyzeBtn.textContent = 'Re-analyze';
       }
     } catch (analysisErr) {
-      // No analysis yet — that's fine.
       console.debug('[job-details] no previous analysis');
     }
   } catch (err) {

@@ -166,3 +166,72 @@ export async function analyzeJob({ resumeText, job }) {
     modelUsed: 'mock',
   };
 }
+
+
+/* --------------------------------------------------------------------------
+   Cover letter (mock)
+   -------------------------------------------------------------------------- */
+
+const GREETINGS = {
+  en: 'Dear Hiring Team,',
+  pl: 'Szanowni Państwo,',
+  uk: 'Шановна командо,',
+};
+
+const CLOSINGS = {
+  en: 'Sincerely,',
+  pl: 'Z poważaniem,',
+  uk: 'З повагою,',
+};
+
+const INTRO_TEMPLATES = {
+  en: (job) => `I am writing to express my strong interest in the ${job.title || 'advertised'} position at ${job.company || 'your company'}. Your team's focus aligns closely with my background in software development, and I would be excited to contribute.`,
+  pl: (job) => `Piszę, aby wyrazić swoje szczere zainteresowanie stanowiskiem ${job.title || 'ogłoszonym'} w firmie ${job.company || 'Państwa firmie'}. Kierunek rozwoju Państwa zespołu jest bliski mojemu doświadczeniu w tworzeniu oprogramowania i chętnie wniosę swój wkład.`,
+  uk: (job) => `Пишу, щоб висловити щиру зацікавленість у позиції ${job.title || 'оголошеній'} у компанії ${job.company || 'вашій компанії'}. Напрямок розвитку вашої команди близький до мого досвіду в розробці програмного забезпечення, і я з радістю долучуся.`,
+};
+
+/**
+ * Mock cover letter generator. Returns a realistic-looking letter
+ * built from the job + resume keywords. Deterministic, no API calls.
+ */
+export async function generateCoverLetter({ resumeText, job, language = 'en', tone = 'professional' }) {
+  // Simulate latency.
+  await new Promise((r) => setTimeout(r, 500 + Math.random() * 500));
+
+  const lang = ['en', 'pl', 'uk'].includes(language) ? language : 'en';
+
+  // Pull top 3 tech keywords from CV.
+  const resumeKeywords = extractKeywords(resumeText).slice(0, 3);
+  const skillsList = resumeKeywords.length
+    ? resumeKeywords.join(', ')
+    : 'software development, problem-solving, teamwork';
+
+  const greeting = GREETINGS[lang];
+  const closing = CLOSINGS[lang];
+  const intro = INTRO_TEMPLATES[lang](job);
+
+  // Body differs slightly by language but is templated.
+  const bodies = {
+    en: `Throughout my career, I have developed strong skills in ${skillsList}. I enjoy building reliable, maintainable systems and collaborating closely with teammates to ship features that matter. I am particularly drawn to ${job.company || 'your company'} because of the emphasis on quality and continuous improvement evident in the role description.`,
+    pl: `W trakcie mojej kariery rozwinąłem solidne umiejętności w zakresie: ${skillsList}. Lubię budować niezawodne i łatwe w utrzymaniu systemy oraz blisko współpracować z zespołem, aby dostarczać wartościowe funkcje. Szczególnie przyciąga mnie ${job.company || 'Państwa firma'} ze względu na nacisk na jakość i ciągłe doskonalenie, widoczny w opisie stanowiska.`,
+    uk: `Протягом своєї кар'єри я розвинув(-ла) міцні навички у сфері: ${skillsList}. Мені подобається створювати надійні та зручні в підтримці системи, а також тісно співпрацювати з командою для впровадження важливих функцій. Особливо мене приваблює ${job.company || 'ваша компанія'} завдяки акценту на якості та постійному вдосконаленні, який видно з опису посади.`,
+  };
+
+  const motivations = {
+    en: `I would welcome the opportunity to discuss how my experience can contribute to your team. Thank you for considering my application.`,
+    pl: `Byłbym wdzięczny za możliwość rozmowy o tym, jak moje doświadczenie może wesprzeć Państwa zespół. Dziękuję za rozpatrzenie mojej kandydatury.`,
+    uk: `Буду вдячний(-а) за можливість обговорити, як мій досвід може допомогти вашій команді. Дякую за розгляд моєї кандидатури.`,
+  };
+
+  const body = bodies[lang];
+  const closingSentence = motivations[lang];
+
+  const paragraphs = [greeting, intro, body, closingSentence, `${closing}`];
+
+  return {
+    letter: paragraphs.join('\n\n'),
+    language: lang,
+    tone,
+    modelUsed: 'mock',
+  };
+}

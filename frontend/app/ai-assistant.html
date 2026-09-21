@@ -186,23 +186,43 @@
             <div class="cover-letter-result" id="rr-result"></div>
           </div>
         </section>
-
         <!-- ============================================================
-             Interview Preparation (placeholder)
+             Interview Preparation
              ============================================================ -->
-        <section class="panel" aria-labelledby="interview-prep-title" style="opacity: 0.6;">
+        <section class="panel" aria-labelledby="interview-prep-title">
           <div class="panel__header">
             <div>
               <h3 class="panel__title" id="interview-prep-title">Interview preparation</h3>
               <p class="text-muted" style="font-size: var(--text-sm); margin-top: var(--space-1);">
-                Generate technical, behavioral, and role-specific questions from any job description.
+                Generate 10 questions to prepare for your interview.
               </p>
             </div>
-            <span class="badge badge--accent">Coming soon</span>
           </div>
-          <p class="text-muted" style="font-size: var(--text-sm);">
-            This feature will be available in a future update.
-          </p>
+
+          <div class="form-group">
+            <label for="ip-job" class="label label--required">Select a job</label>
+            <select id="ip-job" class="select">
+              <option value="">Loading jobs…</option>
+            </select>
+            <p class="form-hint">Only jobs with a description can be used for interview prep.</p>
+          </div>
+
+          <div class="form-actions" style="justify-content: flex-start;">
+            <button type="button" class="btn btn--primary" id="ip-generate-btn">
+              <span class="btn__label">Generate questions</span>
+              <span class="spinner" hidden aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <div id="ip-status" hidden style="margin-top: var(--space-4);"></div>
+
+          <div id="ip-result-wrap" hidden style="margin-top: var(--space-6);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3);">
+              <span class="detail-item__label" style="margin: 0;">Interview questions</span>
+              <button type="button" class="btn btn--ghost btn--sm" id="ip-copy-btn">Copy all</button>
+            </div>
+            <div id="ip-result"></div>
+          </div>
         </section>
 
       </div>

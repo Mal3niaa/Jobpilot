@@ -81,3 +81,41 @@ export async function recruiterReply(req, res, next) {
     next(err);
   }
 }
+
+/**
+ * POST /api/ai/interview-questions
+ * Body: { jobId }
+ * Protected.
+ *
+ * Returns: { questions: [{ category, question }], modelUsed }
+ */
+export async function interviewQuestions(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const { jobId } = req.body;
+
+    if (!jobId) throw ApiError.badRequest('jobId is required');
+
+    // Load job (scoped to owner).
+    const job = await jobsDb.findJobById(userId, Number(jobId));
+    if (!job) throw ApiError.notFound('Job not found');
+
+    // Load active resume.
+    const resume = await resumesDb.findActiveByUser(userId);
+    if (!resume) {
+      throw ApiError.badRequest('No active resume. Upload your CV first.');
+    }
+    if (!resume.raw_text || resume.raw_text.trim().length < 30) {
+      throw ApiError.badRequest('Your resume has no extractable text.');
+    }
+
+    const result = await aiService.generateInterviewQuestions({
+      resumeText: resume.raw_text,
+      job,
+    });
+
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+}

@@ -136,3 +136,31 @@ export async function generateRecruiterReply({ message, language }) {
 
   return openai.generateRecruiterReply({ message, language });
 }
+
+/* --------------------------------------------------------------------------
+   Interview questions
+   -------------------------------------------------------------------------- */
+
+export async function generateInterviewQuestions({ resumeText, job }) {
+  if (!resumeText || resumeText.trim().length < 30) {
+    throw ApiError.badRequest(
+      'No resume text available. Upload your CV first (Resume page).'
+    );
+  }
+
+  if (!job.description || job.description.trim().length < 20) {
+    throw ApiError.badRequest(
+      'Job description is too short. Add more details to the job before preparing.'
+    );
+  }
+
+  if (env.MOCK_MODE) {
+    return mockAi.generateInterviewQuestions({ resumeText, job });
+  }
+
+  if (env.N8N_ENABLED) {
+    console.warn('[ai] n8n not implemented for interview prep — using direct OpenAI');
+  }
+
+  return openai.generateInterviewQuestions({ resumeText, job });
+}

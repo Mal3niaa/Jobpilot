@@ -26,6 +26,10 @@ import {
   buildRecruiterReplyPrompt,
 } from './prompts/recruiterReply.prompt.js';
 
+import {
+  INTERVIEW_PREP_SYSTEM_PROMPT,
+  buildInterviewPrepPrompt,
+} from './prompts/interviewPrep.prompt.js';
 /* --------------------------------------------------------------------------
    Shared helpers
    -------------------------------------------------------------------------- */
@@ -162,6 +166,37 @@ export async function generateRecruiterReply({ message, language = 'en' }) {
     reply,
     language,
     intent: 'general',  // OpenAI doesn't classify intent — only mock does
+    modelUsed: env.OPENAI_MODEL || 'gpt-4o-mini',
+  };
+}
+
+/* --------------------------------------------------------------------------
+   Interview questions
+   -------------------------------------------------------------------------- */
+
+export async function generateInterviewQuestions({ resumeText, job }) {
+  const userPrompt = buildInterviewPrepPrompt({ resumeText, job });
+
+  const raw = await callOpenAI({
+    systemPrompt: INTERVIEW_PREP_SYSTEM_PROMPT,
+    userPrompt,
+    temperature: 0.6,
+    jsonMode: true,
+  });
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new ApiError(502, 'OpenAI returned invalid JSON');
+  }
+
+  if (!Array.isArray(parsed.questions)) {
+    throw new ApiError(502, 'OpenAI returned unexpected structure');
+  }
+
+  return {
+    questions: parsed.questions,
     modelUsed: env.OPENAI_MODEL || 'gpt-4o-mini',
   };
 }

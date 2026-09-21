@@ -12,4 +12,7 @@ router.post('/cover-letter', aiController.coverLetter);
 // Recruiter reply generation
 router.post('/recruiter-reply', aiController.recruiterReply);
 
+// Interview question generation
+router.post('/interview-questions', aiController.interviewQuestions);
+
 export default router;

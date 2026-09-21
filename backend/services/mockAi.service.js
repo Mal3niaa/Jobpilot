@@ -308,3 +308,112 @@ export async function generateRecruiterReply({ message, language = 'en' }) {
     modelUsed: 'mock',
   };
 }
+
+
+/* --------------------------------------------------------------------------
+   Interview questions (mock)
+   -------------------------------------------------------------------------- */
+
+// Template questions for behavioral / role-specific (job-agnostic).
+const BEHAVIORAL_QUESTIONS = [
+  'Tell us about a project you are most proud of. What was your role and what did you learn?',
+  'Describe a situation where you had to work with a difficult teammate. How did you handle it?',
+  'Tell us about a time you had to learn a new technology quickly. How did you approach it?',
+];
+
+const ROLE_SPECIFIC_QUESTIONS = [
+  (job) => `Why are you interested in the ${job.title || 'advertised'} position?`,
+  (job) => `What do you know about ${job.company || 'our company'} and why do you want to work here?`,
+  (job) => `Where do you see yourself in 3-5 years, and how does this role fit your goals?`,
+];
+
+// Template technical questions by keyword.
+const TECH_QUESTIONS = {
+  'html': 'What semantic HTML elements do you use most often and why?',
+  'css': 'How do you decide between Flexbox and CSS Grid in a layout?',
+  'javascript': 'Explain the difference between == and === in JavaScript.',
+  'typescript': 'What are generics in TypeScript and when do you use them?',
+  'react': 'What is the difference between state and props in React?',
+  'vue': 'How does Vue\'s reactivity system work at a high level?',
+  'angular': 'What is the role of services in Angular dependency injection?',
+  'node': 'How does the Node.js event loop handle asynchronous I/O?',
+  'node.js': 'How does the Node.js event loop handle asynchronous I/O?',
+  'express': 'How do you structure middleware in an Express application?',
+  'php': 'What are the differences between PHP 7 and PHP 8?',
+  'laravel': 'How does Laravel\'s service container work?',
+  'python': 'What are Python decorators and when would you use them?',
+  'sql': 'What is the difference between INNER JOIN and LEFT JOIN?',
+  'mysql': 'How would you optimize a slow SQL query?',
+  'postgresql': 'When would you use a JSONB column in PostgreSQL?',
+  'postgres': 'When would you use a JSONB column in PostgreSQL?',
+  'mongodb': 'How do you model one-to-many relationships in MongoDB?',
+  'redis': 'What are common use cases for Redis in a web application?',
+  'docker': 'What is the difference between an image and a container in Docker?',
+  'kubernetes': 'What is a Kubernetes pod and how does it differ from a container?',
+  'aws': 'What AWS services would you use for a typical web application?',
+  'git': 'What is the difference between git merge and git rebase?',
+  'rest api': 'What makes an API RESTful? Give examples of RESTful conventions.',
+  'graphql': 'How does GraphQL differ from REST, and when would you choose it?',
+  'tailwind': 'How does Tailwind CSS differ from traditional CSS frameworks?',
+};
+
+/**
+ * Mock interview questions generator.
+ * Uses keywords from job description to pick relevant technical questions,
+ * then adds behavioral and role-specific ones.
+ */
+export async function generateInterviewQuestions({ resumeText, job }) {
+  // Simulate latency.
+  await new Promise((r) => setTimeout(r, 500 + Math.random() * 500));
+
+  const jobText = [job.title || '', job.description || '', job.notes || ''].join('\n');
+  const keywords = extractKeywords(jobText);
+
+  // Technical: 4-5 questions from keywords.
+  const technicalQuestions = [];
+  const seenQuestions = new Set();
+
+  for (const kw of keywords) {
+    if (technicalQuestions.length >= 5) break;
+    const q = TECH_QUESTIONS[kw];
+    if (q && !seenQuestions.has(q)) {
+      technicalQuestions.push({ category: 'technical', question: q });
+      seenQuestions.add(q);
+    }
+  }
+
+  // If not enough keywords, add generic technical questions.
+  const genericTech = [
+    'Walk us through how you would debug a production issue.',
+    'How do you approach code reviews and what do you look for?',
+    'Describe a challenging bug you fixed recently.',
+    'How do you ensure your code is testable and maintainable?',
+  ];
+  for (const q of genericTech) {
+    if (technicalQuestions.length >= 4) break;
+    if (!seenQuestions.has(q)) {
+      technicalQuestions.push({ category: 'technical', question: q });
+      seenQuestions.add(q);
+    }
+  }
+
+  // Behavioral: 2-3 questions.
+  const behavioralQuestions = BEHAVIORAL_QUESTIONS.slice(0, 3).map((q) => ({
+    category: 'behavioral',
+    question: q,
+  }));
+
+  // Role-specific: 2-3 questions.
+  const roleSpecificQuestions = ROLE_SPECIFIC_QUESTIONS.map((fn) => ({
+    category: 'role-specific',
+    question: fn(job),
+  }));
+
+  // Combine and cap at 10 total.
+  const all = [...technicalQuestions, ...behavioralQuestions, ...roleSpecificQuestions];
+
+  return {
+    questions: all.slice(0, 10),
+    modelUsed: 'mock',
+  };
+}

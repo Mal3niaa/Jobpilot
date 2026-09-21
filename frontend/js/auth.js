@@ -129,6 +129,28 @@ function displayApiError(form, err) {
 }
 
 /* --------------------------------------------------------------------------
+   Redirect helper
+   -------------------------------------------------------------------------- */
+
+/**
+ * After successful auth, decide where to send the user.
+ *  - If `?next=` is present in the URL (set by the auth guard), go there.
+ *  - Otherwise, go to the dashboard.
+ *
+ * `next` is expected to be a path like `/app/dashboard` (from app-shell.js).
+ * We prefix with `..` because we're in `frontend/login.html`.
+ */
+function redirectAfterAuth() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  if (next) {
+    window.location.href = `..${next}`;
+  } else {
+    window.location.href = 'app/dashboard.html';
+  }
+}
+
+/* --------------------------------------------------------------------------
    Register form
    -------------------------------------------------------------------------- */
 
@@ -157,8 +179,7 @@ function setupRegisterForm(form) {
       });
       auth.setToken(token);
       console.log('[auth] registered', user);
-      // Redirect to landing for now — dashboard comes in Phase 6.
-      window.location.href = 'index.html';
+      redirectAfterAuth();
     } catch (err) {
       displayApiError(form, err);
     } finally {
@@ -190,7 +211,7 @@ function setupLoginForm(form) {
       const { user, token } = await api.post('/auth/login', payload);
       auth.setToken(token);
       console.log('[auth] logged in', user);
-      window.location.href = 'index.html';
+      redirectAfterAuth();
     } catch (err) {
       displayApiError(form, err);
     } finally {

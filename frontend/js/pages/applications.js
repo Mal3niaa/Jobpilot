@@ -7,9 +7,7 @@
  *  - Drag-and-drop between columns updates status via PUT /api/jobs/:id
  *  - Optimistic UI: moves card immediately, reverts on error
  *  - Search filter (title / company), with debounce
- *
- * Note: only jobs with non-'saved' statuses appear in the "Applications" columns?
- * No — we show ALL jobs, including 'saved'. The board represents the full pipeline.
+ *  - Mobile: uses dropdown "Move to" instead of drag-and-drop
  */
 
 import { api } from '../api.js';
@@ -17,7 +15,6 @@ import { api } from '../api.js';
 /* --------------------------------------------------------------------------
    Config
    -------------------------------------------------------------------------- */
-// Order of columns on the board.
 const COLUMNS = [
   { status: 'saved', title: 'Saved' },
   { status: 'applied', title: 'Applied' },
@@ -27,7 +24,6 @@ const COLUMNS = [
 ];
 
 // Statuses that collapse into a single column.
-// (recruiter_contacted and technical_task appear in "Applied" and "Interview" columns.)
 const STATUS_GROUP = {
   saved: 'saved',
   applied: 'applied',
@@ -94,12 +90,19 @@ function renderBoard() {
   container.innerHTML = `<div class="kanban-board">${columnsHtml}</div>`;
 
   attachDragAndDrop();
+  attachMoveDropdowns();
 }
 
 function renderCard(job) {
   const match = job.match_score !== null && job.match_score !== undefined
     ? `${job.match_score}%`
     : '';
+
+  // Build a <select> with all column statuses. Selected = current group.
+  const statusOptions = COLUMNS.map((c) => {
+    const isSelected = STATUS_GROUP[job.status] === c.status;
+    return `<option value="${c.status}" ${isSelected ? 'selected' : ''}>${escapeHtml(c.title)}</option>`;
+  }).join('');
 
   return `
     <article class="kanban-card" draggable="true" data-job-id="${job.id}">
@@ -108,6 +111,16 @@ function renderCard(job) {
       <div class="kanban-card__footer">
         <a href="job-details.html?id=${job.id}" class="kanban-card__link" draggable="false">Details</a>
         ${match ? `<span class="badge badge--accent">${escapeHtml(match)}</span>` : ''}
+      </div>
+      <div class="kanban-card__move">
+        <label class="kanban-card__move-label" for="move-${job.id}">Move to:</label>
+        <select
+          id="move-${job.id}"
+          class="kanban-card__select"
+          data-move-id="${job.id}"
+        >
+          ${statusOptions}
+        </select>
       </div>
     </article>
   `;
@@ -176,7 +189,31 @@ function applyFilter() {
 }
 
 /* --------------------------------------------------------------------------
-   Drag and drop
+   Move job to a new status (shared by DnD and dropdown)
+   -------------------------------------------------------------------------- */
+async function moveJob(job, newStatus) {
+  const oldStatus = job.status;
+
+  if (STATUS_GROUP[oldStatus] === newStatus) return; // no-op
+
+  // Optimistic update.
+  job.status = newStatus;
+  applyFilter();
+
+  try {
+    const data = await api.put(`/jobs/${job.id}`, { status: newStatus });
+    const idx = allJobs.findIndex((j) => j.id === job.id);
+    if (idx >= 0) allJobs[idx] = data.job;
+  } catch (err) {
+    console.error('[applications] status update failed', err);
+    job.status = oldStatus;
+    applyFilter();
+    alert('Failed to update status. Please try again.');
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Drag and drop (desktop)
    -------------------------------------------------------------------------- */
 function attachDragAndDrop() {
   const cards = document.querySelectorAll('.kanban-card');
@@ -188,7 +225,6 @@ function attachDragAndDrop() {
     card.addEventListener('dragstart', (event) => {
       draggedJobId = card.getAttribute('data-job-id');
       card.classList.add('is-dragging');
-      // Required for Firefox.
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', draggedJobId);
     });
@@ -210,7 +246,6 @@ function attachDragAndDrop() {
     });
 
     column.addEventListener('dragleave', (event) => {
-      // Ignore if we're still inside the column (crossing a child element).
       if (!column.contains(event.relatedTarget)) {
         column.classList.remove('is-drop-target');
       }
@@ -226,37 +261,33 @@ function attachDragAndDrop() {
       const job = allJobs.find((j) => String(j.id) === String(draggedJobId));
       if (!job) return;
 
-      const currentGroup = STATUS_GROUP[job.status];
-      if (currentGroup === targetGroup) return; // no change
-
-      // Determine the concrete status to set.
-      // If the group has multiple possible statuses, use the "primary" one.
-      const newStatus = targetGroup; // saved|applied|interview|offer|rejected
-
-      await moveJob(job, newStatus);
+      await moveJob(job, targetGroup);
     });
   });
 }
 
-async function moveJob(job, newStatus) {
-  const oldStatus = job.status;
+/* --------------------------------------------------------------------------
+   Move-to dropdown (mobile)
+   -------------------------------------------------------------------------- */
+function attachMoveDropdowns() {
+  document.querySelectorAll('[data-move-id]').forEach((select) => {
+    // Prevent drag from starting when interacting with the select.
+    select.addEventListener('dragstart', (event) => event.preventDefault());
 
-  // Optimistic update: change local state + re-render.
-  job.status = newStatus;
-  applyFilter();
+    // Avoid duplicated handlers if the same select is re-bound.
+    if (select.dataset.bound === 'true') return;
+    select.dataset.bound = 'true';
 
-  try {
-    const data = await api.put(`/jobs/${job.id}`, { status: newStatus });
-    // Sync with server truth (in case server normalized something).
-    const idx = allJobs.findIndex((j) => j.id === job.id);
-    if (idx >= 0) allJobs[idx] = data.job;
-  } catch (err) {
-    console.error('[applications] status update failed', err);
-    // Revert.
-    job.status = oldStatus;
-    applyFilter();
-    alert('Failed to update status. Please try again.');
-  }
+    select.addEventListener('change', async (event) => {
+      const jobId = event.target.getAttribute('data-move-id');
+      const newStatus = event.target.value;
+
+      const job = allJobs.find((j) => String(j.id) === String(jobId));
+      if (!job) return;
+
+      await moveJob(job, newStatus);
+    });
+  });
 }
 
 /* --------------------------------------------------------------------------

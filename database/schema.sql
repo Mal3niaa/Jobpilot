@@ -87,3 +87,35 @@ CREATE INDEX IF NOT EXISTS idx_resumes_user_id ON resumes (user_id);
 CREATE INDEX IF NOT EXISTS idx_resumes_user_active
   ON resumes (user_id)
   WHERE is_active = TRUE;
+
+
+-- ----------------------------------------------------------------------------
+-- job_analysis
+-- Stores AI analysis results for each (job, resume) pair.
+-- A job can be re-analyzed (different resume, updated prompt, etc.),
+-- so we keep history.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS job_analysis (
+  id                SERIAL PRIMARY KEY,
+  job_id            INTEGER NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  resume_id         INTEGER NOT NULL REFERENCES resumes(id) ON DELETE CASCADE,
+
+  match_score       INTEGER NOT NULL,           -- 0..100
+  summary           TEXT,
+
+  strong_matches    JSONB NOT NULL DEFAULT '[]'::jsonb,
+  partial_matches   JSONB NOT NULL DEFAULT '[]'::jsonb,
+  missing_skills    JSONB NOT NULL DEFAULT '[]'::jsonb,
+  requirements      JSONB NOT NULL DEFAULT '[]'::jsonb,
+  recommendations   JSONB NOT NULL DEFAULT '[]'::jsonb,
+
+  model_used        VARCHAR(100),               -- "gpt-4o-mini", "mock", "n8n"
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Fast lookup: latest analysis for a given job.
+CREATE INDEX IF NOT EXISTS idx_job_analysis_job_id
+  ON job_analysis (job_id, created_at DESC);
+
+-- Prevent re-parsing the same resume for the same job twice in a row.
+-- (Not enforced — we allow multiple analyses for history.)

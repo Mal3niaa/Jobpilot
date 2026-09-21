@@ -1,10 +1,11 @@
 /**
- * job-details.js — View, update status, delete a job.
+ * job-details.js — View, update status, delete a job, run AI analysis.
  *
- * Reads ?id= from URL. Loads GET /api/jobs/:id.
+ * Reads ?id= from URL. Loads GET /api/jobs/:id and GET /api/jobs/:id/analysis.
  * Status dropdown → PUT /api/jobs/:id { status }.
  * Delete → DELETE /api/jobs/:id → redirect jobs.html.
  * Edit → redirect job-new.html?id=X.
+ * Analyze → POST /api/jobs/:id/analyze → render analysis below.
  */
 
 import { api, ApiError } from '../api.js';
@@ -29,6 +30,9 @@ const STATUS_BADGE = {
   rejected: 'badge--danger',
 };
 
+/* --------------------------------------------------------------------------
+   Helpers
+   -------------------------------------------------------------------------- */
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str)
@@ -63,6 +67,9 @@ function getJobIdFromUrl() {
   return id ? Number(id) : null;
 }
 
+/* --------------------------------------------------------------------------
+   Main render
+   -------------------------------------------------------------------------- */
 function renderDetails(container, job) {
   const statusClass = STATUS_BADGE[job.status] || 'badge--neutral';
   const match = job.match_score !== null && job.match_score !== undefined
@@ -144,7 +151,7 @@ function renderDetails(container, job) {
 
           <div>
             <div class="detail-item__label">Match score</div>
-            <div class="detail-item__value">${match}</div>
+            <div class="detail-item__value" id="overview-match-score">${match}</div>
           </div>
 
           <div>
@@ -159,8 +166,8 @@ function renderDetails(container, job) {
 
           <hr class="divider">
 
-          <button type="button" class="btn btn--secondary btn--block" id="analyze-btn" disabled title="AI analysis coming in Phase 9">
-            Analyze with AI (soon)
+          <button type="button" class="btn btn--primary btn--block" id="analyze-btn">
+            Analyze with AI
           </button>
 
           <button type="button" class="btn btn--ghost btn--block" id="delete-btn">
@@ -169,14 +176,130 @@ function renderDetails(container, job) {
         </div>
       </aside>
     </div>
+
+    <section id="analysis-section" style="margin-top: var(--space-6);"></section>
   `;
 }
 
+/* --------------------------------------------------------------------------
+   Analysis render
+   -------------------------------------------------------------------------- */
+function renderAnalysisLoading(section) {
+  section.innerHTML = `
+    <div class="panel">
+      <div class="empty-state">
+        <span class="spinner spinner--lg" aria-hidden="true"></span>
+        <p class="text-muted">Analyzing your CV against this job…</p>
+        <p class="text-muted" style="font-size: var(--text-xs);">This may take a few seconds.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderAnalysisError(section, message) {
+  section.innerHTML = `
+    <div class="alert alert--danger">
+      ${escapeHtml(message || 'Failed to analyze. Please try again.')}
+    </div>
+  `;
+}
+
+function renderAnalysis(section, a) {
+  const scoreColor = a.matchScore >= 75 ? 'var(--color-success)'
+                  : a.matchScore >= 50 ? 'var(--color-warning)'
+                  : 'var(--color-danger)';
+
+  const badgeRow = (items, cls, emptyText) => {
+    if (!items || items.length === 0) {
+      return `<span class="text-muted" style="font-size: var(--text-sm);">${escapeHtml(emptyText)}</span>`;
+    }
+    return items.map((s) => `<span class="badge ${cls}">${escapeHtml(s)}</span>`).join('');
+  };
+
+  const listItems = (items) => items.map((r) => `<li>${escapeHtml(r)}</li>`).join('');
+
+  const strongHtml = badgeRow(a.strongMatches, 'badge--success', 'None detected');
+  const partialHtml = badgeRow(a.partialMatches, 'badge--warning', 'None');
+  const missingHtml = badgeRow(a.missingSkills, 'badge--danger', 'None — great fit!');
+
+  const requirementsHtml = (a.requirements && a.requirements.length)
+    ? `<ul style="list-style: disc; padding-left: var(--space-5); font-size: var(--text-sm); line-height: var(--leading-relaxed);">${listItems(a.requirements)}</ul>`
+    : '<p class="text-muted" style="font-size: var(--text-sm);">No explicit requirements detected.</p>';
+
+  const recommendationsHtml = (a.recommendations && a.recommendations.length)
+    ? `<ul style="list-style: disc; padding-left: var(--space-5); font-size: var(--text-sm); line-height: var(--leading-relaxed);">${listItems(a.recommendations)}</ul>`
+    : '';
+
+  const modelLabel = a.modelUsed === 'mock' ? 'mock (no API key)' : escapeHtml(a.modelUsed);
+  const dateStr = formatDate(a.createdAt);
+
+  section.innerHTML = `
+    <div class="panel">
+      <div class="panel__header">
+        <h3 class="panel__title">AI Analysis</h3>
+        <span class="text-muted" style="font-size: var(--text-xs);">
+          ${escapeHtml(modelLabel)} · ${escapeHtml(dateStr)}
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-6);">
+        <span style="font-size: var(--text-6xl); font-weight: var(--weight-bold); color: ${scoreColor}; letter-spacing: -0.03em; line-height: 1;">
+          ${a.matchScore}%
+        </span>
+        <span class="text-muted" style="font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.06em;">Match</span>
+      </div>
+
+      ${a.summary ? `<p style="margin-bottom: var(--space-6); color: var(--color-text); line-height: var(--leading-relaxed);">${escapeHtml(a.summary)}</p>` : ''}
+
+      <hr class="divider">
+
+      <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <div>
+          <div class="detail-item__label">Strong matches</div>
+          <div class="badge-row">${strongHtml}</div>
+        </div>
+
+        <div>
+          <div class="detail-item__label">Partial matches</div>
+          <div class="badge-row">${partialHtml}</div>
+        </div>
+
+        <div>
+          <div class="detail-item__label">Missing skills</div>
+          <div class="badge-row">${missingHtml}</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <div>
+          <div class="detail-item__label">Requirements</div>
+          ${requirementsHtml}
+        </div>
+
+        ${recommendationsHtml ? `
+        <div>
+          <div class="detail-item__label">Recommendations</div>
+          ${recommendationsHtml}
+        </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+/* --------------------------------------------------------------------------
+   Actions
+   -------------------------------------------------------------------------- */
 function attachActions(container, job) {
   const statusSelect = container.querySelector('#status-select');
   const statusBadge = container.querySelector('#status-badge');
   const deleteBtn = container.querySelector('#delete-btn');
+  const analyzeBtn = container.querySelector('#analyze-btn');
+  const analysisSection = document.getElementById('analysis-section');
 
+  // Status change
   if (statusSelect) {
     statusSelect.addEventListener('change', async (event) => {
       const newStatus = event.target.value;
@@ -187,7 +310,6 @@ function attachActions(container, job) {
       try {
         const data = await api.put(`/jobs/${job.id}`, { status: newStatus });
         job.status = data.job.status;
-
         statusBadge.textContent = data.job.status;
         statusBadge.className = `badge ${STATUS_BADGE[data.job.status] || 'badge--neutral'}`;
       } catch (err) {
@@ -200,6 +322,7 @@ function attachActions(container, job) {
     });
   }
 
+  // Delete
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
       const confirmed = window.confirm(`Delete "${job.title}"? This cannot be undone.`);
@@ -218,8 +341,42 @@ function attachActions(container, job) {
       }
     });
   }
+
+  // Analyze
+  if (analyzeBtn && analysisSection) {
+    analyzeBtn.addEventListener('click', async () => {
+      analyzeBtn.disabled = true;
+      const originalLabel = analyzeBtn.textContent;
+      analyzeBtn.textContent = 'Analyzing…';
+
+      renderAnalysisLoading(analysisSection);
+
+      // Scroll to analysis section
+      analysisSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      try {
+        const data = await api.post(`/jobs/${job.id}/analyze`);
+        renderAnalysis(analysisSection, data.analysis);
+
+        // Update overview match score
+        const scoreEl = document.getElementById('overview-match-score');
+        if (scoreEl) scoreEl.textContent = `${data.analysis.matchScore}%`;
+
+        analyzeBtn.textContent = 'Re-analyze';
+      } catch (err) {
+        console.error('[job-details] analyze failed', err);
+        renderAnalysisError(analysisSection, err.message);
+        analyzeBtn.textContent = originalLabel;
+      } finally {
+        analyzeBtn.disabled = false;
+      }
+    });
+  }
 }
 
+/* --------------------------------------------------------------------------
+   Init
+   -------------------------------------------------------------------------- */
 async function init() {
   const container = document.getElementById('job-details-container');
   if (!container) return;
@@ -240,6 +397,21 @@ async function init() {
     const data = await api.get(`/jobs/${id}`);
     renderDetails(container, data.job);
     attachActions(container, data.job);
+
+    // Try to load existing analysis (silently).
+    try {
+      const analysisData = await api.get(`/jobs/${id}/analysis`);
+      if (analysisData.analysis) {
+        const section = document.getElementById('analysis-section');
+        if (section) renderAnalysis(section, analysisData.analysis);
+
+        const analyzeBtn = container.querySelector('#analyze-btn');
+        if (analyzeBtn) analyzeBtn.textContent = 'Re-analyze';
+      }
+    } catch (analysisErr) {
+      // No analysis yet — that's fine.
+      console.debug('[job-details] no previous analysis');
+    }
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) {
       container.innerHTML = `

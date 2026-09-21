@@ -839,3 +839,23 @@
     padding-inline: var(--space-4);
   }
 }
+
+/* --------------------------------------------------------------------------
+   13. Charts (analytics)
+   -------------------------------------------------------------------------- */
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+.chart-wrap--sm {
+  height: 260px;
+}
+
+@media (max-width: 768px) {
+  .chart-wrap,
+  .chart-wrap--sm {
+    height: 220px;
+  }
+}

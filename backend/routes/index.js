@@ -5,7 +5,7 @@ import jobRoutes from './job.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
 import resumeRoutes from './resume.routes.js';
 import aiRoutes from './ai.routes.js';
-
+import analyticsRoutes from './analytics.routes.js';
 const router = Router();
 
 // Health check — no auth required.
@@ -26,4 +26,5 @@ router.use('/resume', resumeRoutes);
 // AI — cover letter, recruiter reply, interview prep (Phase 11+).
 router.use('/ai', aiRoutes);
 
+router.use('/analytics', analyticsRoutes);
 export default router;

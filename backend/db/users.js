@@ -45,3 +45,43 @@ export async function findById(id) {
   const { rows } = await query(sql, [id]);
   return rows[0] ?? null;
 }
+
+/**
+ * Update the user's full name.
+ * Returns the updated user (without password_hash).
+ */
+export async function updateFullName(userId, fullName) {
+  const sql = `
+    UPDATE users
+    SET full_name = $1
+    WHERE id = $2
+    RETURNING id, email, full_name, created_at
+  `;
+  const { rows } = await query(sql, [fullName, userId]);
+  return rows[0] ?? null;
+}
+
+/**
+ * Update the user's password hash.
+ * Returns true if a row was updated.
+ */
+export async function updatePasswordHash(userId, passwordHash) {
+  const sql = `
+    UPDATE users
+    SET password_hash = $1
+    WHERE id = $2
+  `;
+  const result = await query(sql, [passwordHash, userId]);
+  return result.rowCount > 0;
+}
+
+/**
+ * Delete the user's account.
+ * ON DELETE CASCADE removes all related rows (jobs, resumes, analyses).
+ * Returns true if a row was deleted.
+ */
+export async function deleteUser(userId) {
+  const sql = `DELETE FROM users WHERE id = $1`;
+  const result = await query(sql, [userId]);
+  return result.rowCount > 0;
+}

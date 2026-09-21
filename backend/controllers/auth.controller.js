@@ -40,3 +40,43 @@ export async function me(req, res, next) {
     next(err);
   }
 }
+/**
+ * PUT /api/auth/me (protected)
+ * Update the user's profile (currently: full_name).
+ */
+export async function updateProfile(req, res, next) {
+  try {
+    const { fullName } = req.body;
+    const user = await authService.updateProfile(req.user.id, { fullName });
+    res.json({ success: true, data: { user } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PUT /api/auth/password (protected)
+ * Change the user's password.
+ */
+export async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    await authService.changePassword(req.user.id, { currentPassword, newPassword });
+    res.json({ success: true, data: { changed: true } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * DELETE /api/auth/me (protected)
+ * Delete the user's account and all related data.
+ */
+export async function deleteAccount(req, res, next) {
+  try {
+    await authService.deleteAccount(req.user.id);
+    res.json({ success: true, data: { deleted: true } });
+  } catch (err) {
+    next(err);
+  }
+}

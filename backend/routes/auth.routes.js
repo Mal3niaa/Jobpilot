@@ -31,5 +31,15 @@ router.post(
 
 // GET /api/auth/me — protected
 router.get('/me', requireAuth, authController.me);
+// GET /api/auth/me — protected
+router.get('/me', requireAuth, authController.me);
 
+// PUT /api/auth/me — update profile
+router.put('/me', requireAuth, authController.updateProfile);
+
+// PUT /api/auth/password — change password
+router.put('/password', requireAuth, authController.changePassword);
+
+// DELETE /api/auth/me — delete account
+router.delete('/me', requireAuth, authController.deleteAccount);
 export default router;

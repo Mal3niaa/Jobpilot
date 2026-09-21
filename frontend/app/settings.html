@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New job - JobPilot</title>
+  <title>Settings - JobPilot</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +16,10 @@
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/app.css">
 </head>
-<body class="app-body" data-page-title="New job">
+<body class="app-body" data-page-title="Settings">
   <a href="#main" class="skip-link">Skip to content</a>
 
   <div class="app-layout">
-
-    <!-- Sidebar (тот же, что на dashboard/jobs) -->
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <a href="../index.html" class="sidebar__logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -66,7 +64,7 @@
           </svg>
           <span>AI Assistant</span>
         </a>
-                <a href="analytics.html" class="sidebar__link">
+        <a href="analytics.html" class="sidebar__link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M4 19h16M7 15V9M12 15V5M17 15v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
@@ -92,7 +90,6 @@
 
     <div class="sidebar__backdrop" id="sidebar-backdrop"></div>
 
-    <!-- Topbar -->
     <header class="topbar">
       <button
         type="button"
@@ -107,7 +104,7 @@
         </svg>
       </button>
 
-      <h1 class="topbar__title" data-page-title>New job</h1>
+      <h1 class="topbar__title" data-page-title>Settings</h1>
 
       <div class="topbar__spacer"></div>
 
@@ -129,88 +126,152 @@
       </div>
     </header>
 
-    <!-- Main -->
     <main class="main" id="main">
       <div class="page-header">
         <div>
-          <h2 class="page-header__title" id="page-title">Add a new job</h2>
-          <p class="page-header__subtitle">Fill in the details of the position you want to track.</p>
+          <h2 class="page-header__title">Settings</h2>
+          <p class="page-header__subtitle">Manage your account and preferences.</p>
         </div>
       </div>
 
-      <div class="form-card">
-        <form id="job-form" novalidate>
+      <div style="display: flex; flex-direction: column; gap: var(--space-6); max-width: 720px;">
+
+        <!-- ============================================================
+             Profile
+             ============================================================ -->
+        <section class="panel" aria-labelledby="profile-title">
+          <div class="panel__header">
+            <h3 class="panel__title" id="profile-title">Profile</h3>
+          </div>
+
+          <div id="profile-status" hidden style="margin-bottom: var(--space-4);"></div>
+
+          <form id="profile-form" novalidate>
+            <div class="form-group">
+              <label for="profile-fullName" class="label">Full name</label>
+              <input
+                type="text"
+                id="profile-fullName"
+                name="fullName"
+                class="input"
+                maxlength="255"
+                autocomplete="name"
+                placeholder="Your name"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="profile-email" class="label">Email</label>
+              <input
+                type="email"
+                id="profile-email"
+                class="input"
+                disabled
+                aria-describedby="profile-email-hint"
+              >
+              <p class="form-hint" id="profile-email-hint">Email cannot be changed.</p>
+            </div>
+
+            <div class="form-actions" style="justify-content: flex-start;">
+              <button type="submit" class="btn btn--primary" id="profile-save-btn">
+                <span class="btn__label">Save changes</span>
+                <span class="spinner" hidden aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ============================================================
+             Theme
+             ============================================================ -->
+        <section class="panel" aria-labelledby="theme-title">
+          <div class="panel__header">
+            <h3 class="panel__title" id="theme-title">Appearance</h3>
+          </div>
+
           <div class="form-group">
-            <label for="title" class="label label--required">Job title</label>
-            <input type="text" id="title" name="title" class="input" maxlength="255" required placeholder="e.g. Junior Web Developer">
-            <p class="form-error" data-error-for="title" hidden></p>
+            <label for="settings-theme" class="label">Theme</label>
+            <select id="settings-theme" class="select" style="max-width: 240px;">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+            <p class="form-hint">Choose how JobPilot looks to you.</p>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             Change password
+             ============================================================ -->
+        <section class="panel" aria-labelledby="password-title">
+          <div class="panel__header">
+            <h3 class="panel__title" id="password-title">Change password</h3>
           </div>
 
-          <div class="form-row">
+          <div id="password-status" hidden style="margin-bottom: var(--space-4);"></div>
+
+          <form id="password-form" novalidate>
             <div class="form-group">
-              <label for="company" class="label">Company</label>
-              <input type="text" id="company" name="company" class="input" maxlength="255" placeholder="e.g. Acme">
+              <label for="currentPassword" class="label label--required">Current password</label>
+              <input
+                type="password"
+                id="currentPassword"
+                name="currentPassword"
+                class="input"
+                autocomplete="current-password"
+                required
+              >
             </div>
+
             <div class="form-group">
-              <label for="location" class="label">Location</label>
-              <input type="text" id="location" name="location" class="input" maxlength="255" placeholder="e.g. Warsaw / Remote">
+              <label for="newPassword" class="label label--required">New password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                class="input"
+                autocomplete="new-password"
+                minlength="8"
+                maxlength="128"
+                required
+              >
+              <p class="form-hint">At least 8 characters.</p>
             </div>
-          </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="salaryMin" class="label">Salary min</label>
-              <input type="number" id="salaryMin" name="salaryMin" class="input" min="0" step="100" placeholder="e.g. 5000">
+            <div class="form-actions" style="justify-content: flex-start;">
+              <button type="submit" class="btn btn--primary" id="password-save-btn">
+                <span class="btn__label">Change password</span>
+                <span class="spinner" hidden aria-hidden="true"></span>
+              </button>
             </div>
-            <div class="form-group">
-              <label for="salaryMax" class="label">Salary max</label>
-              <input type="number" id="salaryMax" name="salaryMax" class="input" min="0" step="100" placeholder="e.g. 8000">
-            </div>
-            <div class="form-group">
-              <label for="employmentType" class="label">Employment type</label>
-              <select id="employmentType" name="employmentType" class="select">
-                <option value="">—</option>
-                <option value="full-time">Full-time</option>
-                <option value="part-time">Part-time</option>
-                <option value="contract">Contract</option>
-                <option value="internship">Internship</option>
-                <option value="freelance">Freelance</option>
-              </select>
-            </div>
+          </form>
+        </section>
+
+        <!-- ============================================================
+             Danger zone
+             ============================================================ -->
+        <section class="panel" aria-labelledby="danger-title" style="border-color: var(--color-danger);">
+          <div class="panel__header">
+            <h3 class="panel__title" id="danger-title" style="color: var(--color-danger);">Danger zone</h3>
           </div>
 
-          <div class="form-group">
-            <label for="url" class="label">Job URL</label>
-            <input type="url" id="url" name="url" class="input" maxlength="1000" placeholder="https://...">
-            <p class="form-error" data-error-for="url" hidden></p>
-          </div>
+          <p class="text-muted" style="font-size: var(--text-sm); margin-bottom: var(--space-4);">
+            Deleting your account will permanently remove all your jobs, resumes, and AI analyses. This cannot be undone.
+          </p>
 
-          <div class="form-group">
-            <label for="description" class="label">Job description</label>
-            <textarea id="description" name="description" class="textarea" rows="6" placeholder="Paste the job description here…"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="notes" class="label">Your notes</label>
-            <textarea id="notes" name="notes" class="textarea" rows="3" placeholder="Anything you want to remember…"></textarea>
-          </div>
-
-          <div class="alert alert--danger" id="form-error-banner" hidden></div>
-
-          <div class="form-actions">
-            <a href="jobs.html" class="btn btn--secondary">Cancel</a>
-            <button type="submit" class="btn btn--primary" id="submit-btn">
-              <span class="btn__label">Save job</span>
-              <span class="spinner" hidden aria-hidden="true"></span>
+          <div class="form-actions" style="justify-content: flex-start; border-top: none; padding-top: 0; margin-top: 0;">
+            <button type="button" class="btn btn--secondary" id="delete-account-btn" style="color: var(--color-danger); border-color: var(--color-danger);">
+              Delete my account
             </button>
           </div>
-        </form>
+        </section>
+
       </div>
     </main>
   </div>
 
   <script src="../js/api.js" type="module"></script>
   <script src="../js/app-shell.js" type="module"></script>
-  <script src="../js/pages/job-form.js" type="module"></script>
+  <script src="../js/pages/settings.js" type="module"></script>
 </body>
 </html>

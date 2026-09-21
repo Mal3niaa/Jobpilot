@@ -73,3 +73,51 @@ export async function getCurrentUser(userId) {
   }
   return user;
 }
+/**
+ * Update the user's full name.
+ * Returns the updated user object.
+ */
+export async function updateProfile(userId, { fullName }) {
+  if (fullName !== undefined && (typeof fullName !== 'string' || fullName.length > 255)) {
+    throw ApiError.badRequest('Full name must be a string of at most 255 characters');
+  }
+
+  const user = await usersDb.updateFullName(userId, fullName ?? null);
+  if (!user) throw ApiError.notFound('User not found');
+  return user;
+}
+
+/**
+ * Change the user's password.
+ * Requires the current password for verification.
+ */
+export async function changePassword(userId, { currentPassword, newPassword }) {
+  if (!currentPassword || !newPassword) {
+    throw ApiError.badRequest('Current password and new password are required');
+  }
+  if (newPassword.length < 8 || newPassword.length > 128) {
+    throw ApiError.badRequest('New password must be 8–128 characters');
+  }
+
+  const user = await usersDb.findById(userId); // doesn't include password_hash
+  if (!user) throw ApiError.notFound('User not found');
+
+  // Need password_hash — use findByEmail.
+  const fullUser = await usersDb.findByEmail(user.email);
+  if (!fullUser) throw ApiError.notFound('User not found');
+
+  const ok = await verifyPassword(currentPassword, fullUser.password_hash);
+  if (!ok) throw ApiError.unauthorized('Current password is incorrect');
+
+  const newHash = await hashPassword(newPassword);
+  await usersDb.updatePasswordHash(userId, newHash);
+}
+
+/**
+ * Delete the user's account.
+ * All related data (jobs, resumes, analyses) is removed via FK cascade.
+ */
+export async function deleteAccount(userId) {
+  const deleted = await usersDb.deleteUser(userId);
+  if (!deleted) throw ApiError.notFound('User not found');
+}

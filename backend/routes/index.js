@@ -3,6 +3,7 @@ import { getHealth } from '../controllers/health.controller.js';
 import authRoutes from './auth.routes.js';
 import jobRoutes from './job.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
+import resumeRoutes from './resume.routes.js';
 
 const router = Router();
 
@@ -18,9 +19,10 @@ router.use('/jobs', jobRoutes);
 // Dashboard — aggregated counters for the authenticated user.
 router.use('/dashboard', dashboardRoutes);
 
+// Resume — upload PDF, get parsed text, delete.
+router.use('/resume', resumeRoutes);
+
 // Future routes will be mounted here:
-// router.use('/applications', appsRoutes); // Phase 7
-// router.use('/resume', resumeRoutes);     // Phase 8
 // router.use('/ai', aiRoutes);             // Phase 9
 
 export default router;

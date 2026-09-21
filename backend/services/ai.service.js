@@ -115,3 +115,24 @@ export async function generateCoverLetter({ resumeText, job, language, tone }) {
 
   return openai.generateCoverLetter({ resumeText, job, language, tone });
 }
+
+
+/* --------------------------------------------------------------------------
+   Recruiter reply
+   -------------------------------------------------------------------------- */
+
+export async function generateRecruiterReply({ message, language }) {
+  if (!message || message.trim().length < 10) {
+    throw ApiError.badRequest('Recruiter message is too short.');
+  }
+
+  if (env.MOCK_MODE) {
+    return mockAi.generateRecruiterReply({ message, language });
+  }
+
+  if (env.N8N_ENABLED) {
+    console.warn('[ai] n8n not implemented for recruiter replies — using direct OpenAI');
+  }
+
+  return openai.generateRecruiterReply({ message, language });
+}

@@ -51,3 +51,33 @@ export async function coverLetter(req, res, next) {
     next(err);
   }
 }
+
+
+/**
+ * POST /api/ai/recruiter-reply
+ * Body: { message, language }
+ * Protected.
+ *
+ * Returns: { reply, language, intent, modelUsed }
+ */
+export async function recruiterReply(req, res, next) {
+  try {
+    const { message, language = 'en' } = req.body;
+
+    if (!message || typeof message !== 'string' || message.trim().length < 10) {
+      throw ApiError.badRequest('Message is required (at least 10 characters)');
+    }
+    if (!ALLOWED_LANGUAGES.includes(language)) {
+      throw ApiError.badRequest(`language must be one of: ${ALLOWED_LANGUAGES.join(', ')}`);
+    }
+
+    const result = await aiService.generateRecruiterReply({
+      message: message.trim(),
+      language,
+    });
+
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+}

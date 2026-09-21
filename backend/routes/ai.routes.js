@@ -6,7 +6,10 @@ const router = Router();
 
 router.use(requireAuth);
 
-// POST /api/ai/cover-letter
+// Cover letter generation
 router.post('/cover-letter', aiController.coverLetter);
+
+// Recruiter reply generation
+router.post('/recruiter-reply', aiController.recruiterReply);
 
 export default router;

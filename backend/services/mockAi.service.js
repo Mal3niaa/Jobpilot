@@ -235,3 +235,76 @@ export async function generateCoverLetter({ resumeText, job, language = 'en', to
     modelUsed: 'mock',
   };
 }
+
+
+/* --------------------------------------------------------------------------
+   Recruiter reply (mock)
+   -------------------------------------------------------------------------- */
+
+/**
+ * Simple intent detection based on keywords.
+ */
+function detectRecruiterIntent(text) {
+  const t = text.toLowerCase();
+
+  if (/(interview|rozmow|spotkan|співбесід|зустріч|schedule|call)/i.test(t)) {
+    return 'interview_invite';
+  }
+  if (/(unfortunat|niestety|на жаль|regret|not move forward|reject)/i.test(t)) {
+    return 'rejection';
+  }
+  if (/(question|pytanie|питання|\?|could you|can you|would you)/i.test(t)) {
+    return 'question';
+  }
+  if (/(salary|wynagrodzen|зарплат|expectations|rate)/i.test(t)) {
+    return 'salary_question';
+  }
+  return 'general';
+}
+
+const REPLIES = {
+  interview_invite: {
+    en: 'Thank you for the invitation. I would be glad to schedule an interview and discuss the role in more detail. Please let me know which time slot works best for you, and I will confirm availability.',
+    pl: 'Dziękuję za zaproszenie. Chętnie umówię się na rozmowę i omówię szczegóły stanowiska. Proszę o wskazanie dogodnego terminu — potwierdzę dostępność.',
+    uk: 'Дякую за запрошення. Із задоволенням узгоджу час співбесіди та обговорю деталі ролі. Будь ласка, підкажіть зручний час — я підтверджу свою доступність.',
+  },
+  rejection: {
+    en: 'Thank you for taking the time to review my application and for letting me know. I appreciate the opportunity and the feedback. I wish you and the team all the best.',
+    pl: 'Dziękuję za poświęcony czas i informację zwrotną dotyczącą mojej aplikacji. Doceniam możliwość udziału w procesie. Życzę Państwu i zespołowi wszystkiego dobrego.',
+    uk: 'Дякую за час, приділений моїй заявці, і за зворотний зв’язок. Ціную можливість взяти участь у процесі. Бажаю вам і команді всього найкращого.',
+  },
+  question: {
+    en: 'Thank you for your message and for the questions. Please find my answers below. Let me know if you need any further details — I am happy to clarify.',
+    pl: 'Dziękuję za wiadomość i pytania. Poniżej przesyłam odpowiedzi. W razie potrzeby chętnie doprecyzuję szczegóły.',
+    uk: 'Дякую за повідомлення та запитання. Нижче надсилаю відповіді. За потреби з радістю уточню деталі.',
+  },
+  salary_question: {
+    en: 'Thank you for the question. I would prefer to discuss the compensation range once we have a clearer understanding of the role and responsibilities. I am open to aligning expectations during the interview process.',
+    pl: 'Dziękuję za pytanie. Wolę omówić zakres wynagrodzenia po dokładniejszym poznaniu roli i obowiązków. Jestem otwarty na dopasowanie oczekiwań podczas rozmów.',
+    uk: 'Дякую за запитання. Вважаю за краще обговорити рівень винагороди після детальнішого розуміння ролі та обов’язків. Готовий узгодити очікування під час співбесіди.',
+  },
+  general: {
+    en: 'Thank you for reaching out. I am interested in learning more about the opportunity. Please let me know the next steps.',
+    pl: 'Dziękuję za kontakt. Jestem zainteresowany bliższym poznaniem oferty. Proszę o informację o kolejnych krokach.',
+    uk: 'Дякую за звернення. Зацікавлений дізнатися більше про можливість. Підкажіть, будь ласка, наступні кроки.',
+  },
+};
+
+/**
+ * Mock recruiter reply generator. Detects intent from the recruiter's message
+ * and returns a templated reply in the requested language.
+ */
+export async function generateRecruiterReply({ message, language = 'en' }) {
+  await new Promise((r) => setTimeout(r, 400 + Math.random() * 400));
+
+  const lang = ['en', 'pl', 'uk'].includes(language) ? language : 'en';
+  const intent = detectRecruiterIntent(message || '');
+  const reply = REPLIES[intent][lang];
+
+  return {
+    reply,
+    language: lang,
+    intent,
+    modelUsed: 'mock',
+  };
+}

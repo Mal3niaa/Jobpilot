@@ -25,7 +25,7 @@
        ==================================================================== -->
   <header class="header" id="header">
     <div class="container header__inner">
-      <a href="/" class="header__logo" aria-label="JobPilot home">
+      <a href="index.html" class="header__logo" aria-label="JobPilot home">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           <circle cx="20" cy="6" r="2" fill="currentColor"/>
@@ -40,7 +40,7 @@
         <a href="#faq">FAQ</a>
       </nav>
 
-      <div class="header__actions">
+      <div class="header__actions" id="header-actions">
         <button
           type="button"
           class="btn btn--ghost btn--icon theme-toggle"
@@ -56,8 +56,17 @@
           </svg>
         </button>
 
-        <a href="login.html" class="btn btn--ghost">Sign in</a>
-        <a href="register.html" class="btn btn--primary">Get started</a>
+        <!-- Guest state (visible when not logged in) -->
+        <div class="header__guest" data-auth="guest">
+          <a href="login.html" class="btn btn--ghost">Sign in</a>
+          <a href="register.html" class="btn btn--primary">Get started</a>
+        </div>
+
+        <!-- Authenticated state (visible when logged in) — filled by JS -->
+        <div class="header__user" data-auth="user" hidden>
+          <a href="app/dashboard.html" class="btn btn--secondary">Dashboard</a>
+          <button type="button" class="btn btn--ghost" data-sign-out>Sign out</button>
+        </div>
 
         <button
           type="button"
@@ -81,8 +90,18 @@
         <a href="#ai-analysis">AI Analysis</a>
         <a href="#faq">FAQ</a>
         <hr class="divider">
-        <a href="login.html">Sign in</a>
-        <a href="register.html" class="btn btn--primary btn--block">Get started</a>
+
+        <!-- Guest links (mobile) -->
+        <div data-auth="guest">
+          <a href="login.html">Sign in</a>
+          <a href="register.html" class="btn btn--primary btn--block">Get started</a>
+        </div>
+
+        <!-- Authenticated links (mobile) — filled by JS -->
+        <div data-auth="user" hidden>
+          <a href="app/dashboard.html" class="btn btn--primary btn--block">Go to dashboard</a>
+          <button type="button" class="btn btn--ghost btn--block" data-sign-out>Sign out</button>
+        </div>
       </nav>
     </div>
   </header>
@@ -593,7 +612,7 @@
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand">
-        <a href="/" class="header__logo">
+        <a href="index.html" class="header__logo">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M4 14L10 8L14 12L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="20" cy="6" r="2" fill="currentColor"/>

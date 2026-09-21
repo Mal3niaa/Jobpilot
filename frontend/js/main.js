@@ -92,28 +92,28 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 });
 
 // ─── 4. Auth-aware header ───────────────────────────────────
-// If a token exists, replace Sign in / Get started with a Sign out button.
+// Toggle between [Sign in / Get started] and [Dashboard / Sign out]
+// based on whether the user has a token.
 
 function renderAuthState() {
-  if (!auth.isAuthenticated()) return;
+  const isAuthed = auth.isAuthenticated();
 
-  const actions = document.querySelector('.header__actions');
-  if (!actions) return;
-
-  // Remove Sign in / Get started links.
-  actions.querySelectorAll('a.btn').forEach((el) => el.remove());
-
-  // Insert Sign out button.
-  const signOutBtn = document.createElement('button');
-  signOutBtn.type = 'button';
-  signOutBtn.className = 'btn btn--secondary';
-  signOutBtn.textContent = 'Sign out';
-  signOutBtn.addEventListener('click', () => {
-    auth.clearToken();
-    window.location.reload();
+  document.querySelectorAll('[data-auth="guest"]').forEach((el) => {
+    el.hidden = isAuthed;
   });
+  document.querySelectorAll('[data-auth="user"]').forEach((el) => {
+    el.hidden = !isAuthed;
+  });
+}
 
-  actions.appendChild(signOutBtn);
+function setupSignOut() {
+  document.querySelectorAll('[data-sign-out]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      auth.clearToken();
+      window.location.reload();
+    });
+  });
 }
 
 renderAuthState();
+setupSignOut();
